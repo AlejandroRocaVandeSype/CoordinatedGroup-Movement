@@ -11,35 +11,50 @@ public class UnitSelections : MonoBehaviour
     }
 
    
-    public void DeselectAll()
+    // Deselect units
+    // If unit == null means that all units need to be deselected
+    // otherwise deselect the specified unit
+    public void Deselect(UnitCharacter unit = null)
     {
-        foreach (UnitCharacter c in _unitsSelected)
+        if(unit != null)
         {
-            c.IsSelected = false;
+            unit.IsSelected = false;
+            _unitsSelected.Remove(unit);
         }
-
-        _unitsSelected.Clear();
-    }
-
-    public void SelectSingleUnit(UnitCharacter unit)
-    {
-        if(!IsRepeated(unit))
+        else
         {
-            DeselectAll();
-            AddNewUnit(unit);
+            // If no unit was provided -> Deselect all units
+            foreach (UnitCharacter c in _unitsSelected)
+            {
+                if(c != null)
+                {
+                    c.IsSelected = false;
+                }               
+            }
+            _unitsSelected.Clear();
         }
        
     }
 
+    public void SelectSingleUnit(UnitCharacter unit)
+    {
+        Deselect();
+        AddNewUnit(unit);
+    }
+
     public void SelectMultipleUnits(UnitCharacter unit)
     {
-        if (!IsRepeated(unit))
+        if (_unitsSelected.Contains(unit) == false)
         {
             // Add a new unit without removing the current one
             AddNewUnit(unit);
         }
+        else
+        {
+            // If it is repeated then we just deselect it
+            Deselect(unit);
+        }
     }
-
 
     private void AddNewUnit(UnitCharacter unit)
     {
@@ -47,14 +62,4 @@ public class UnitSelections : MonoBehaviour
         unit.IsSelected = true;
     }
 
-
-    private bool IsRepeated(UnitCharacter newUnit)
-    {
-        UnitCharacter unitFound = _unitsSelected.Find(unit => unit.GetInstanceID() == newUnit.GetInstanceID());
-
-        if (unitFound != null)
-            return true;
-
-        return false;
-    }
 }

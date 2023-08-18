@@ -11,13 +11,17 @@ public class UnitCharacter : MonoBehaviour
     private Vector3 _goalPosition;                // Where does the Unit have to move
 
     private bool _isSelected;
-
-    [SerializeField] private GameObject _selectionPrefab;
-    private GameObject _selectionRing;
+    
+    // GameObject with a simple image to represent unit selection
+    private GameObject _selectionRing = null;
+    private string UNIT_SELECTION = "Unit_Selection";
 
     public void Awake()
     {
         _movementBehavior = GetComponent<MovementBehavior>();
+        // Get the gameObject with ring selection image in order to activa/deactivate with selection
+        _selectionRing = transform.GetChild(0).Find(UNIT_SELECTION).gameObject;
+
     }
 
     public void Start()
@@ -46,22 +50,12 @@ public class UnitCharacter : MonoBehaviour
         set 
         { 
             _isSelected = value;
-
-            if(_selectionRing == null && _isSelected)
-            {
-                // Instantiate the prefab at the unit's position
-                _selectionRing = Instantiate(_selectionPrefab, transform.position, _selectionPrefab.transform.rotation, transform.GetChild(0));
+            if (_selectionRing != null)
                 _selectionRing.SetActive(value);
-                Destroy(_selectionPrefab);          // Watch out with this
-            }
-            else
-            {
-                _selectionRing.SetActive(value);
-            }
           
         }
     }
 
-
+   
    
 }

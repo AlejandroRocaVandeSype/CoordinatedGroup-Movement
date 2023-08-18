@@ -13,8 +13,14 @@ public class Player : MonoBehaviour
     const string GROUND_LAYER = "Ground";
     const string OBSTACLE_LAYER = "Obstacle";
 
-
+    // Units to select/deselect
     UnitSelections _unitSelections;
+
+    // Dragging
+    Vector2 _dragEndPos;
+    Vector2 _dragStartPos;
+    Rect _selectionRect;
+    [SerializeField] RectTransform _visualDragging;
 
 
     public void Start()
@@ -59,7 +65,10 @@ public class Player : MonoBehaviour
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hitInfo;
 
-            Debug.Log("Entro");
+            // Reset the positions of the visual box for dragging mouse input
+            bool resetDragPos = true;
+            DrawDraggingVisual(resetDragPos);
+
             if (Physics.Raycast(ray, out hitInfo))
             {
                 GameObject hitObject = hitInfo.collider.gameObject;
@@ -67,14 +76,43 @@ public class Player : MonoBehaviour
                 if (unit != null)
                 {
                     // A unit was selected
-                    _unitSelections.SelectSingleUnit(unit);
+
+                    if (Input.GetKey(KeyCode.LeftShift))
+                    {
+                        // Adding multiple units
+                        _unitSelections.SelectMultipleUnits(unit);
+                    }
+                    else
+                    {
+                        // Single unit
+                        _unitSelections.SelectSingleUnit(unit);
+                    }
+                 
+                    
                 }
                 else
                 {
-                    // No unit selected
-                    _unitSelections.DeselectAll();
+                    if(!Input.GetKey(KeyCode.LeftShift))
+                    {
+                        // No unit selected and leftshit wasn't being pressed -> Deselect all of them
+                        _unitSelections.Deselect();
+                    }
+                   
                 }
             }
+        }
+
+        // Dragging
+        if(Input.GetMouseButtonDown(MOUSE_LEFT_CLICK))
+        {
+            _dragStartPos= Input.mousePosition;
+        }
+
+        if(Input.GetMouseButton(MOUSE_LEFT_CLICK))
+        {
+            // Hold left mouse click
+            _dragEndPos= Input.mousePosition;
+            DrawDraggingVisual();
         }
 
     }
@@ -82,5 +120,22 @@ public class Player : MonoBehaviour
     public Vector3 ClickPosition
     {
         get { return _clickPosition; }
+    }
+
+
+    public void DrawDraggingVisual(bool reset = false)
+    {
+        if(reset)
+        {
+            _dragStartPos = Vector2.zero;
+            _dragEndPos = Vector2.zero;
+        }
+
+        // Center of the box
+        _visualDragging.position = (_dragStartPos + _dragEndPos) / 2;
+        _visualDragging.sizeDelta = new Vector2(Mathf.Abs(_dragStartPos.x - _dragEndPos.x),
+            Mathf.Abs(_dragStartPos.y - _dragEndPos.y));
+
+
     }
 }
