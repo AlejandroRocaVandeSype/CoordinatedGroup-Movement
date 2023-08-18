@@ -21,7 +21,7 @@ public class UnitCharacter : MonoBehaviour
         _movementBehavior = GetComponent<MovementBehavior>();
         // Get the gameObject with ring selection image in order to activa/deactivate with selection
         _selectionRing = transform.GetChild(0).Find(UNIT_SELECTION).gameObject;
-
+        
     }
 
     public void Start()
@@ -31,7 +31,7 @@ public class UnitCharacter : MonoBehaviour
 
     public void Update()
     {
-        if (_player != null)
+        if (_player != null && IsSelected)
         {
             _goalPosition = _player.ClickPosition;
 

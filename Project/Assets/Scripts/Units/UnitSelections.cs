@@ -56,6 +56,15 @@ public class UnitSelections : MonoBehaviour
         }
     }
 
+    // Selection of units when player drag the mouse click
+    public void DragSelection(UnitCharacter unit)
+    {
+        if (_unitsSelected.Contains(unit) == false)
+        {
+            AddNewUnit(unit);
+        }
+    }
+
     private void AddNewUnit(UnitCharacter unit)
     {
         _unitsSelected.Add(unit);
