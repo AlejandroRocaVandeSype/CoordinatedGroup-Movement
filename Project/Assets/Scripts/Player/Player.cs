@@ -5,6 +5,8 @@ using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
+    World _world;
+
     private Vector3 _clickPosition = Vector3.zero;
 
     const int MOUSE_LEFT_CLICK = 0;
@@ -17,7 +19,6 @@ public class Player : MonoBehaviour
     UnitSelections _unitSelectionsCP;
 
     // Mouse click dragging
-    Camera _myMainCamera;
     Vector2 _dragEndPos;
     Vector2 _dragStartPos;
     Rect _selectionRect;                                // To check if we are selecting units from the world
@@ -27,16 +28,18 @@ public class Player : MonoBehaviour
     public void Start()
     {
         _unitSelectionsCP = GetComponent<UnitSelections>();
-        _myMainCamera = Camera.main;
+        _world = World.Instance;
     }
 
     public void Update()
     {
-       CheckMouseInput();
+       PlayerInput();
     }
 
-    private void CheckMouseInput()
+    private void PlayerInput()
     {
+        // UNITS MOVEMENT 
+        // REGISTER WHERE THE PLAYER CLICKED WITH THE MOUSE
         if (Input.GetMouseButtonUp(MOUSE_RIGHT_CLICK))
         {
             // Single click - Save the position where it was clicked
@@ -61,7 +64,9 @@ public class Player : MonoBehaviour
             }
         }
 
-        // Unit Selection
+        // UNITS SELECTION
+        // WITH LEFT SHIT -> Allows Multiple selection (or deselection if unit already selected)
+        // WITHOUT LEFT SHIFT -> Single unit selection
         if (Input.GetMouseButtonUp(MOUSE_LEFT_CLICK))
         {          
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -78,7 +83,6 @@ public class Player : MonoBehaviour
                 if (unit != null)
                 {
                     // A unit was selected
-
                     if (Input.GetKey(KeyCode.LeftShift))
                     {
                         // Adding multiple units
@@ -88,33 +92,32 @@ public class Player : MonoBehaviour
                     {
                         // Single unit
                         _unitSelectionsCP.SelectSingleUnit(unit);
-                    }
-                 
-                    
+                    }                 
                 }
                 else
                 {
+                    // NO UNIT WAS SELECTED
                     if(!Input.GetKey(KeyCode.LeftShift))
                     {
-                        // No unit selected and leftshit wasn't being pressed -> Deselect all of them
+                        // If LEFT SHIFT wasn't being pressed -> Deselect all of them
                         _unitSelectionsCP.Deselect();
                     }
                    
                 }
             }
 
-            // Now check if we selected some units with the mouse click dragging
-            SelectUnitsDragging();
+            // When button is up we also check if a unit was selected with the visual dragging box
+            DraggingSelectionUnits();
         }
 
-        // Dragging
+        // START OF MOUSE CLICK DRAGGING
         if(Input.GetMouseButtonDown(MOUSE_LEFT_CLICK))
         {
             _dragStartPos= Input.mousePosition;
 
             _selectionRect = new Rect();
         }
-
+        // MOUSE CLICK HOLD -> Draw a visual box
         if(Input.GetMouseButton(MOUSE_LEFT_CLICK))
         {
             // Hold left mouse click
@@ -123,23 +126,36 @@ public class Player : MonoBehaviour
             CreateSelectionRect();
         }
 
+        // CTRL + G -> Try to create a formation based on the units selected
+        if(Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.G))
+        {
+            // Check if enough units are selected
+            if(_unitSelectionsCP.UnitsSelected.Count > 1)
+            {
+                _world.FormationManager.CreateFormation(_unitSelectionsCP.UnitsSelected);
+            }
+        }
+
     }
 
     private void DrawDraggingVisual(bool reset = false)
     {
         if(reset)
         {
+            // Reset box visual
             _dragStartPos = Vector2.zero;
             _dragEndPos = Vector2.zero;
         }
 
-        // Center of the box
+        // Calculate the positions of the box based on the mouse positions
         _visualDragging.position = (_dragStartPos + _dragEndPos) / 2;
         _visualDragging.sizeDelta = new Vector2(Mathf.Abs(_dragStartPos.x - _dragEndPos.x),
             Mathf.Abs(_dragStartPos.y - _dragEndPos.y));
 
     }
 
+    // Set the rectangle positions in order to check later if any unit was inside this
+    // selection
     private void CreateSelectionRect()
     {
         // X
@@ -156,7 +172,7 @@ public class Player : MonoBehaviour
             _selectionRect.xMax = Input.mousePosition.x;
         }
 
-
+        // Y
         if(Input.mousePosition.y < _dragStartPos.y)
         {
             // Dragging down
@@ -172,14 +188,14 @@ public class Player : MonoBehaviour
     }
 
     // Get all the units from the scene and check if they have been selected by dragging the mouse
-    private void SelectUnitsDragging()
+    private void DraggingSelectionUnits()
     {
-        List<UnitCharacter> unitsInScene = World.Instance.UnitsInScene;
+        List<UnitCharacter> unitsInScene = _world.UnitsInScene;
         foreach (UnitCharacter unit in unitsInScene)
         {
             Vector3 unitPos = unit.transform.position;
    
-            if(_selectionRect.Contains(_myMainCamera.WorldToScreenPoint(unitPos)))
+            if(_selectionRect.Contains(Camera.main.WorldToScreenPoint(unitPos)))
             {
                 _unitSelectionsCP.DragSelection(unit);
             }

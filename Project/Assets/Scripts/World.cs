@@ -35,7 +35,15 @@ public class World : MonoBehaviour
 
 
     List<UnitCharacter> _allUnits;
-    
+    const string UNITS_NAME = "Units";
+
+    FormationManager _formationManager;
+
+    private void Awake()
+    {
+        _formationManager = GetComponent<FormationManager>();
+    }
+
     void Start()
     {
         AddAllUnitsFromScene();
@@ -44,7 +52,7 @@ public class World : MonoBehaviour
     void AddAllUnitsFromScene()
     {
 
-        GameObject unitsGO = gameObject.transform.Find("Units").gameObject;
+        GameObject unitsGO = gameObject.transform.Find(UNITS_NAME).gameObject;
 
         UnitCharacter[] unitsFound = unitsGO.GetComponentsInChildren<UnitCharacter>();
 
@@ -63,5 +71,10 @@ public class World : MonoBehaviour
     public List<UnitCharacter> UnitsInScene
     {
         get { return _allUnits; }
+    }
+
+    public FormationManager FormationManager
+    {
+        get { return _formationManager; }
     }
 }

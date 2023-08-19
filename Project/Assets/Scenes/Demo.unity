@@ -368,38 +368,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &313428896
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 313428897}
-  m_Layer: 0
-  m_Name: BoxSelection
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &313428897
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 313428896}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.8812585, y: -7.8059845, z: 13.346311}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 779095397}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &373250308
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,7 +414,7 @@ GameObject:
   - component: {fileID: 396626795}
   - component: {fileID: 396626794}
   m_Layer: 5
-  m_Name: BoxSelectionGraphic
+  m_Name: SelectionBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -541,7 +509,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 396626793}
-  m_Father: {fileID: 313428897}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -961,6 +929,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1605464477}
   - component: {fileID: 1605464478}
+  - component: {fileID: 1605464479}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -996,6 +965,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29d9f20614f73594a8ecc539110cc98e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1605464479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605464476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6ca6864e90e71b46808b99eabdc762c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1632250676 stripped
@@ -1596,5 +1577,5 @@ SceneRoots:
   - {fileID: 70632410}
   - {fileID: 2096572523}
   - {fileID: 1262840182}
-  - {fileID: 313428897}
+  - {fileID: 779095397}
   - {fileID: 261257988}

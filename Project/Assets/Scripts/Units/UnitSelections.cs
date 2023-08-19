@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UnitSelections : MonoBehaviour
 {
-    List<UnitCharacter> _unitsSelected;
+    private List<UnitCharacter> _unitsSelected;
     void Awake()
     {
         _unitsSelected= new List<UnitCharacter>();
@@ -69,6 +69,12 @@ public class UnitSelections : MonoBehaviour
     {
         _unitsSelected.Add(unit);
         unit.IsSelected = true;
+    }
+
+
+    public List<UnitCharacter> UnitsSelected
+    {
+        get { return _unitsSelected; }
     }
 
 }

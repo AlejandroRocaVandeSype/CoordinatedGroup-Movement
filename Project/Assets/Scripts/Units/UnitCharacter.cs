@@ -11,6 +11,7 @@ public class UnitCharacter : MonoBehaviour
     private Vector3 _goalPosition;                // Where does the Unit have to move
 
     private bool _isSelected;
+    private bool _inFormation;
     
     // GameObject with a simple image to represent unit selection
     private GameObject _selectionRing = null;
@@ -22,6 +23,8 @@ public class UnitCharacter : MonoBehaviour
         // Get the gameObject with ring selection image in order to activa/deactivate with selection
         _selectionRing = transform.GetChild(0).Find(UNIT_SELECTION).gameObject;
         
+        _isSelected = false;
+        _inFormation = false;
     }
 
     public void Start()
@@ -56,6 +59,13 @@ public class UnitCharacter : MonoBehaviour
         }
     }
 
-   
+    public bool InFormation
+    {
+        get { return _inFormation; }
+        set
+        {
+            _inFormation = value;
+        }
+    }
    
 }
