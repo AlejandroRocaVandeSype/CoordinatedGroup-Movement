@@ -6,6 +6,9 @@ public class FormationManager : MonoBehaviour
 {
     private List<Formation> _formations;
 
+    private int _nextFormationID;           // Keep track of the ID's for the formations
+                                            // So each formation can have a different ID
+
     void Awake()
     {
         _formations = new List<Formation>();       
@@ -17,14 +20,15 @@ public class FormationManager : MonoBehaviour
         {
             // Still no formations -> Create a new one
             _formations.Add(new Formation());
-            _formations[0].Create(units);
+            _formations[0].Create(_nextFormationID, units);
+            ++_nextFormationID;
             return;
         }
 
         // There is at least one formation in the world
         // First check if the selected units are already in a formation
 
-        List<int> _formationIndexes = new List<int>();
+        List<int> formationIndexes = new List<int>();
         for(int formationIdx = 0; formationIdx < _formations.Count; ++formationIdx)
         {
             foreach (UnitCharacter unit in units)
@@ -32,25 +36,58 @@ public class FormationManager : MonoBehaviour
                 if (_formations[formationIdx].Contains(unit))
                 {
                     // This formation contains this unit already
-                    _formationIndexes.Add(formationIdx);
+                    formationIndexes.Add(_formations[formationIdx].ID);
                 }
             }
         }
         
-        if(_formationIndexes.Count == 0)
+        if(formationIndexes.Count == 0)
         {
             // All units are not in a formation yet -> Create a new one
             _formations.Add(new Formation());
-            _formations[_formations.Count - 1].Create(units);
+            _formations[_formations.Count - 1].Create(_nextFormationID, units);
+            ++_nextFormationID;
             return;
         }
 
-      
-         // There are at least some units that are already in a formation
-         // Group all units in a unique formation
-         _formations[_formationIndexes[0]].Add(units);
-        
-        // Need to remove units from previous 
 
+        // There are at least some units that are already in a formation
+
+        // First remove from other formations the units
+        RemoveFromFormations(formationIndexes);
+
+        // Group all units in a unique formation
+        AddToFormation(formationIndexes[0], units);
+
+    }
+
+    private void AddToFormation(int formationID, List<UnitCharacter> unitsToAdd)
+    {
+        Formation foundFormation = _formations.Find(formation =>formation.ID == formationID);
+
+        if (foundFormation != null)
+            foundFormation.Add(unitsToAdd);
+    }
+
+
+    private void RemoveFromFormations(List<int> formationIndexes)
+    {
+        int notToRemoveID = formationIndexes[0];
+        // First formation is ignored since we will group units there
+        for (int index = 1; index < formationIndexes.Count; ++index)
+        {
+            int formationID = formationIndexes[index];
+            if(formationID != notToRemoveID)
+            {
+                Formation foundFormation = _formations.Find(formation => formation.ID == formationID);
+                if (foundFormation != null)
+                {
+                    // Remove all units from this formation
+                    foundFormation.RemoveAll();
+                    _formations.Remove(foundFormation);
+                }
+            }
+          
+        }
     }
 }

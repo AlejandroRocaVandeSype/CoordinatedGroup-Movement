@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+using System.Drawing;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class UnitCharacter : MonoBehaviour
 {
@@ -17,6 +14,10 @@ public class UnitCharacter : MonoBehaviour
     private GameObject _selectionRing = null;
     private string UNIT_SELECTION = "Unit_Selection";
 
+    // To change the color of the unit when selected
+    private MeshRenderer _meshRenderer;
+    private UnityEngine.Color _unitSelectedColor = UnityEngine.Color.red;         // Selected color
+
     public void Awake()
     {
         _movementBehavior = GetComponent<MovementBehavior>();
@@ -25,6 +26,9 @@ public class UnitCharacter : MonoBehaviour
         
         _isSelected = false;
         _inFormation = false;
+
+        // The child contains the visuals of the character
+        _meshRenderer = gameObject.transform.GetChild(0).GetComponent<MeshRenderer>();
     }
 
     public void Start()
@@ -65,6 +69,11 @@ public class UnitCharacter : MonoBehaviour
         set
         {
             _inFormation = value;
+            if (_meshRenderer != null)
+            {
+                // Modify the material's color directly
+                _meshRenderer.material.color = _unitSelectedColor;
+            }
         }
     }
    

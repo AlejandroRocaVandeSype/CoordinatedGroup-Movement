@@ -4,39 +4,59 @@ using UnityEngine;
 
 public class Formation
 {
-    private List<UnitCharacter> _units;
+    private List<UnitCharacter> _unitsInFormation;
     private Vector3 _leaderSlot;            // Center of the formation
     private List<Vector3> _groupSlots;      // Rest of the slots. Positioned based on the center slot (leader)
 
-    private static int _formationID = 0;
+    private int _formationID = 0;
 
-    public void Create(List<UnitCharacter> units)
+    public void Create(int formationID, List<UnitCharacter> unitsToAdd)
     {
-
-        _formationID++;
+        _formationID = formationID;
+        _unitsInFormation = new List<UnitCharacter>(unitsToAdd.Count);
+        Add(unitsToAdd);
     }
 
-    public void Add(List<UnitCharacter> units)
+    public void Add(List<UnitCharacter> unitsToAdd)
     {
-        // Check to not add repeated units
+        foreach(UnitCharacter newUnit in unitsToAdd)
+        {
+            // Don't add if unit is already in the formation
+            if (Contains(newUnit))
+                continue;
+
+            // Not repeated
+            _unitsInFormation.Add(newUnit);
+            newUnit.InFormation = true;
+        }
+       
     }
 
-    public void Remove(List<UnitCharacter> units)
+    public void Remove(UnitCharacter unitToRemove)
     {
+        _unitsInFormation.Remove(unitToRemove);
+    }
 
+    public void RemoveAll()
+    {
+        foreach(UnitCharacter unit in _unitsInFormation)
+        {
+            unit.InFormation = false;
+        }
+        _unitsInFormation.Clear();
     }
 
     public bool Contains(UnitCharacter unit)
     {
-        if(_units.Count != 0)
+        if(_unitsInFormation.Count != 0)
         {
-            return _units.Contains(unit);
+            return _unitsInFormation.Contains(unit);
         }
 
         return false;
     }
 
-    public static int ID
+    public int ID
     {
         get { return _formationID; }
     }
