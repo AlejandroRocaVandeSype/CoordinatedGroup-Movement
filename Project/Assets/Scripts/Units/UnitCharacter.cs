@@ -4,8 +4,8 @@ using UnityEngine;
 public class UnitCharacter : MonoBehaviour
 {
     private Player _player;
-    private MovementBehavior _movementBehavior;
-    private Vector3 _goalPosition;                // Where does the Unit have to move
+    private UnitMovementBehaviour _movementBehavior;
+    private Vector3 _targetPosition;                // Where does the Unit have to move
 
     private bool _isSelected;
     private bool _inFormation;
@@ -16,11 +16,12 @@ public class UnitCharacter : MonoBehaviour
 
     // To change the color of the unit when selected
     private MeshRenderer _meshRenderer;
-    private UnityEngine.Color _unitSelectedColor = UnityEngine.Color.red;         // Selected color
+    private UnityEngine.Color _originalColor;
+    private UnityEngine.Color _formationColor;         // Color when unit in formation
 
     public void Awake()
     {
-        _movementBehavior = GetComponent<MovementBehavior>();
+        _movementBehavior = GetComponent<UnitMovementBehaviour>();
         // Get the gameObject with ring selection image in order to activa/deactivate with selection
         _selectionRing = transform.GetChild(0).Find(UNIT_SELECTION).gameObject;
         
@@ -29,6 +30,9 @@ public class UnitCharacter : MonoBehaviour
 
         // The child contains the visuals of the character
         _meshRenderer = gameObject.transform.GetChild(0).GetComponent<MeshRenderer>();
+        _originalColor = _meshRenderer.material.color;
+        UnityEngine.Color color = new UnityEngine.Color(0.67f, 0.13f, 0.16f);
+        _formationColor = color;
     }
 
     public void Start()
@@ -38,17 +42,26 @@ public class UnitCharacter : MonoBehaviour
 
     public void Update()
     {
-        if (_player != null && IsSelected)
+        if (_targetPosition != Vector3.zero)
         {
-            _goalPosition = _player.ClickPosition;
-
-            if ( _goalPosition != Vector3.zero && _movementBehavior != null)
-            {
-                _movementBehavior.Target = _goalPosition;
-            }
-                
+            _movementBehavior.Target = _targetPosition;
         }
+    }
 
+
+    private void ChangeColor(bool inFormation)
+    {
+
+        if (_inFormation)
+        {
+            // Modify the material's color directly
+            _meshRenderer.material.color = _formationColor;
+        }
+        else
+        {
+            _meshRenderer.material.color = _originalColor;
+        }
+     
     }
 
     public bool IsSelected
@@ -71,10 +84,21 @@ public class UnitCharacter : MonoBehaviour
             _inFormation = value;
             if (_meshRenderer != null)
             {
-                // Modify the material's color directly
-                _meshRenderer.material.color = _unitSelectedColor;
+                ChangeColor(value);
             }
         }
+    }
+
+
+    public Vector3 Target
+    {
+        set { _targetPosition = value; }
+    }
+
+
+    public UnitMovementBehaviour MovementBehavior
+    {
+        get { return _movementBehavior; }
     }
    
 }

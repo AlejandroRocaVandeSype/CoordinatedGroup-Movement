@@ -1,13 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FormationManager : MonoBehaviour
 {
+    [SerializeField] private GameObject _formationPrefab;
     private List<Formation> _formations;
-
-    private int _nextFormationID;           // Keep track of the ID's for the formations
-                                            // So each formation can have a different ID
+    private int _nextFormationID;           // Each formation will have a different ID 
 
     void Awake()
     {
@@ -19,7 +17,7 @@ public class FormationManager : MonoBehaviour
         if(_formations.Count == 0)
         {
             // Still no formations -> Create a new one
-            _formations.Add(new Formation());
+            _formations.Add(Instantiate(_formationPrefab, transform).GetComponent<Formation>());
             _formations[0].Create(_nextFormationID, units);
             ++_nextFormationID;
             return;
@@ -44,7 +42,7 @@ public class FormationManager : MonoBehaviour
         if(formationIndexes.Count == 0)
         {
             // All units are not in a formation yet -> Create a new one
-            _formations.Add(new Formation());
+            _formations.Add(Instantiate(_formationPrefab, transform).GetComponent<Formation>());
             _formations[_formations.Count - 1].Create(_nextFormationID, units);
             ++_nextFormationID;
             return;
@@ -88,6 +86,15 @@ public class FormationManager : MonoBehaviour
                 }
             }
           
+        }
+    }
+
+    // Send the movement order 
+    public void SendMovementOrder(Vector3 target)
+    {
+        foreach(var formation in _formations)
+        {
+            formation.MoveOrder(target);
         }
     }
 }

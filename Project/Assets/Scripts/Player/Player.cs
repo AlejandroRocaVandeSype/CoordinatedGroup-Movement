@@ -6,7 +6,7 @@ using static UnityEngine.GraphicsBuffer;
 public class Player : MonoBehaviour
 {
     World _world;
-
+    FormationManager _formationManager;
     private Vector3 _clickPosition = Vector3.zero;
 
     const int MOUSE_LEFT_CLICK = 0;
@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     {
         _unitSelectionsCP = GetComponent<UnitSelections>();
         _world = World.Instance;
+        _formationManager = _world.FormationManager;
     }
 
     public void Update()
@@ -38,8 +39,9 @@ public class Player : MonoBehaviour
 
     private void PlayerInput()
     {
-        // UNITS MOVEMENT 
+        //      ******* UNITS MOVEMENT *********
         // REGISTER WHERE THE PLAYER CLICKED WITH THE MOUSE
+        // *************************************************
         if (Input.GetMouseButtonUp(MOUSE_RIGHT_CLICK))
         {
             // Single click - Save the position where it was clicked
@@ -61,12 +63,15 @@ public class Player : MonoBehaviour
                     _clickPosition = Vector3.zero;
                 }
 
+                // Send the movement order to the selected formation
+                _formationManager.SendMovementOrder(_clickPosition);
             }
         }
 
-        // UNITS SELECTION
+        //               ****** UNITS SELECTION ******
         // WITH LEFT SHIT -> Allows Multiple selection (or deselection if unit already selected)
         // WITHOUT LEFT SHIFT -> Single unit selection
+        // ****************************************************************
         if (Input.GetMouseButtonUp(MOUSE_LEFT_CLICK))
         {          
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
