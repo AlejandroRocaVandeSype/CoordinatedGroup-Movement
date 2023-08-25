@@ -25,6 +25,15 @@ Multiple units can also be selected by just clicking with the left mouse button 
 
 <img src="https://github.com/AlejandroRocaVandeSype/CoordinatedGroup-Movement/assets/31854308/836036d6-4b3b-402a-a34b-803d44b82c25" width="600">
 
+### Units Movement
+Next thing to implement is the movement of our units. Units will move wherever the player click in the world. To do this, I used the raytracing system that Unity provides to raycast a ray from the player's mouse position to the ground. When the ray hit the ground, the coordinates are saved and send to the units. However, units won't move to this position until they have been selected by the player.
+
+<img src="https://github.com/AlejandroRocaVandeSype/CoordinatedGroup-Movement/assets/31854308/7554caea-9ee3-4047-adb1-9beb6f4761b1" width="600">
+
+The movement is made by using the Navigation System from Unity. When the target on where to move has been defined, in our case, when the player clicks in a valid position in the world, a path is calculated to this position. After being calculated, the units move towards the target. However, as you can see, they all move to the same position pushing each other trying to reach the target. This is not what we want, and ir order to achieve our objective we need to start by creating a formation.
+
+### Creating a Formation
+
 
 
 
