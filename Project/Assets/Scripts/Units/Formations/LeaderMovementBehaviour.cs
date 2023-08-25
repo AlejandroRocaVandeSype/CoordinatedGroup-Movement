@@ -17,7 +17,8 @@ public class LeaderMovementBehaviour : MonoBehaviour
     private Target _target;
     private bool _isMoving = false;
     private float _speed = 0f;
-    private float _maxSpeed = 10f;
+    private const float MAX_SPEED = 10f;
+    private float _angularSpeed = 5f;
     private float _stopDistance;
 
     private Rigidbody _rigidBody;                       // To control the angular speed of the leader
@@ -30,7 +31,7 @@ public class LeaderMovementBehaviour : MonoBehaviour
         _pathToTarget = new NavMeshPath();
         _target.position = transform.position;       // At start the target is the position where it is located
         _target.direction = transform.position;
-        _stopDistance = 1f;
+        _stopDistance = 0.5f;
 
         _rigidBody = GetComponent<Rigidbody>();
     }
@@ -69,8 +70,8 @@ public class LeaderMovementBehaviour : MonoBehaviour
             // The next corner in the path will determine in which direction the it has to go
             // End position - start position = vector towards end position 
             _target.direction = (_pathToTarget.corners[1] - _currentPos).normalized;
-            _speed = _maxSpeed;
-            if (_maxSpeed != 0f)
+            _speed = MAX_SPEED;
+            if (_speed != 0f)
                 _isMoving = true;
         }
         else
@@ -85,7 +86,7 @@ public class LeaderMovementBehaviour : MonoBehaviour
         // Move towards the indicated direction
         // Aline the the forward direction of the leader with the target
         // this way it correctly rotates towards the target
-        _rigidBody.angularVelocity = new Vector3(0f, Vector3.Cross(_target.direction, transform.forward).y, 0f) * -10f;
+        _rigidBody.angularVelocity = new Vector3(0f, Vector3.Cross(_target.direction, transform.forward).y, 0f) * -_angularSpeed;
 
         // Update position using speed
         transform.position += (_speed * transform.forward * Time.fixedDeltaTime);
@@ -101,5 +102,16 @@ public class LeaderMovementBehaviour : MonoBehaviour
     {
         get { return _target.position; }
         set { _target.position = value; }
+    }
+
+    public float Speed
+    {
+        get { return _speed; }
+    }
+
+    public float AngularSpeed
+    {
+        get { return _angularSpeed; }
+        set {  _angularSpeed= value; }
     }
 }

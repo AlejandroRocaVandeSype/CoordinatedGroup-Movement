@@ -31,8 +31,7 @@ public class UnitCharacter : MonoBehaviour
         // The child contains the visuals of the character
         _meshRenderer = gameObject.transform.GetChild(0).GetComponent<MeshRenderer>();
         _originalColor = _meshRenderer.material.color;
-        UnityEngine.Color color = new UnityEngine.Color(0.67f, 0.13f, 0.16f);
-        _formationColor = color;
+        _formationColor = UnityEngine.Color.red;
     }
 
     public void Start()

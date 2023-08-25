@@ -6,7 +6,6 @@ using UnityEngine.AI;
 
 public class FormationLeader : MonoBehaviour
 {
-
     LeaderMovementBehaviour _leaderMovement;         // Handle everything related with leader's movement
 
     [SerializeField] GameObject _leaderSlotVisual;      // For debug purposes to see where are the positions located in the world
@@ -30,32 +29,43 @@ public class FormationLeader : MonoBehaviour
     public void DefineUnitPositions()
     {
         // Define the positions for all the units relative to center (leader position)
+        int totalRows = 4;
+        int totalUnitsPerRow = 5;
+        int totalUnits = _formation.Units.Count;
+        int unitsPositioned = 0;
+
+        // Start positioning the units at the left side of the center (2 units to the left)
         Vector3 leftOffset = -Vector3.right * _spacing;
-        Vector3 rightOffset = Vector3.right * _spacing;
+        Vector3 startPos = transform.position + (2 * leftOffset);
 
-        for (int i = 0; i < _formation.Units.Count; i++)
+        // Calculate all positions in the formation
+        for(int rowIdx = 0; rowIdx < totalRows; ++rowIdx)
         {
-            GameObject unitGO = Instantiate(_unitsSlotsVisual, transform);
+            for(int colIdx = 0; colIdx < totalUnitsPerRow; ++colIdx)
+            {
+                if(unitsPositioned < totalUnits)
+                {
+                    // Still units to add
+                    GameObject unitGO = Instantiate(_unitsSlotsVisual, transform);
+                    
+                    Vector3 unitPosition = startPos + (rowIdx * _spacing * Vector3.back) + (colIdx * _spacing * Vector3.right);
+                    unitGO.transform.position = unitPosition;
+                    _unitsTransforms.Add(unitGO.transform);
 
-            // Calculate local position based on the leader's position and orientation
-            Vector3 localPosition = Vector3.zero;
-
-            if (i == 0) localPosition = leftOffset * 2;
-            else if (i == 1) localPosition = leftOffset * 1;
-            else if (i == 2) localPosition = rightOffset * 1;
-            else if (i == 3) localPosition = rightOffset * 2;
-
-            unitGO.transform.localPosition = localPosition;
-
-            _unitsTransforms.Add(unitGO.transform); // Add the Transform component to the list
+                    ++unitsPositioned;
+                }
+            }
         }
-
     }
 
     public void FixedUpdate()
     {
+
         if(_leaderMovement != null )   // Handle leader's movement
+        {          
             _leaderMovement.HandleMovement();
+        }
+           
 
         // Make the units move to their positions in the formation
         List<UnitCharacter> units = _formation.Units;
@@ -63,6 +73,8 @@ public class FormationLeader : MonoBehaviour
         {
             units[unitIdx].Target = _unitsTransforms[unitIdx].position;
         }
+
+       
     }
 
 

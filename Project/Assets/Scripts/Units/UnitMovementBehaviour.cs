@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 
 // MOVEMENT FOR ALL UNITS ( EITHER IN FORMATION OR NOT)
@@ -11,10 +12,13 @@ public class UnitMovementBehaviour : MonoBehaviour
     private Vector3 _previousTarget = Vector3.zero;
     private Vector3 _target = Vector3.zero;          // Where should the character move
 
-    private float _moveSpeed = 10.0f;
+    private float _moveSpeed = 0f;
+    private const float MAX_SPEED = 50f;
+    private const float MIN_SPEED = 6f;
+    private const float SPEED_MODIFIER = 4f;
     private const float MAX_ROTSPEED = 360.0f;
     private const float MIN_ROTSPEED = 15.0f;
-    private float _acceleration = 30.0f;
+    private float _acceleration = 100.0f;
 
 
     // Navegation through the World using Unity NavMesh
@@ -29,37 +33,27 @@ public class UnitMovementBehaviour : MonoBehaviour
     public void FixedUpdate()
     {
         HandleMovement();
-
-        //if(_navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
-        //{
-
-        //    // Disable automatic rotation control by the NavMeshAgent
-        //    _navMeshAgent.updateRotation = false;
-
-        //    // Calculate the direction from the current position to the target position
-        //   // Vector3 directionToTarget = _targetPosition - transform.position;
-
-        //    // Make the GameObject look at the target position
-        //    transform.rotation = Quaternion.LookRotation(_target);
-
-        //    // Re-enable automatic rotation control by the NavMeshAgent
-        //    _navMeshAgent.updateRotation = true;
-
-
-        //}
     }
 
 
     private void HandleMovement()
     {
-       if (_navMeshAgent == null)
+        if (_navMeshAgent == null)
             return;
         if (_target == Vector3.zero)  // No target = No movement
             return;
 
         _navMeshAgent.SetDestination(_target);
+        AdjustSpeed();
     }
 
+    private void AdjustSpeed()
+    {
+        float calculatedSpeed = _navMeshAgent.remainingDistance * SPEED_MODIFIER;
+        _moveSpeed = Mathf.Clamp(calculatedSpeed, MIN_SPEED, MAX_SPEED);
+
+        _navMeshAgent.speed = _moveSpeed;
+    }
     public Vector3 Target
     {
         get { return _target; }
@@ -100,5 +94,10 @@ public class UnitMovementBehaviour : MonoBehaviour
     public float MinAngularSpeed
     {
         get { return MIN_ROTSPEED; }
+    }
+
+    public float Speed
+    {
+        set { _navMeshAgent.speed = value; }
     }
 }
