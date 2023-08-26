@@ -1,4 +1,3 @@
-![SmoothMovement](https://github.com/AlejandroRocaVandeSype/CoordinatedGroup-Movement/assets/31854308/dff96bc4-85a7-439e-9220-812d17024dab)# Coordinated Group movement 
 ## Introduction
 This project implements the basics of Coordinated Group Movement where units are group together in formations. This allows us to move a group of characters in a cohesive way, as if they all will be moving together as a group or squad. 
 
