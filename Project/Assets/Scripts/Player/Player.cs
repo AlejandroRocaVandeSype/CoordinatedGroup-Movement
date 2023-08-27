@@ -57,6 +57,7 @@ public class Player : MonoBehaviour
                 if (hitInfo.collider.gameObject.layer != LayerMask.NameToLayer(OBSTACLE_LAYER))
                 {
                     _clickPosition = hitInfo.point;
+                    StartCoroutine(ResetClickPos());
                 }
                 else
                 {
@@ -205,6 +206,12 @@ public class Player : MonoBehaviour
                 _unitSelectionsCP.DragSelection(unit);
             }
         }
+    }
+
+    private IEnumerator ResetClickPos()
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
+        _clickPosition = Vector3.zero;
     }
 
     public Vector3 ClickPosition

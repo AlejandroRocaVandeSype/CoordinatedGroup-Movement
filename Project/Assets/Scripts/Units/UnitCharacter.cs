@@ -8,7 +8,7 @@ public class UnitCharacter : MonoBehaviour
     private Vector3 _targetPosition;                // Where does the Unit have to move
 
     private bool _isSelected;
-    private bool _inFormation;
+    private Formation _formation;                   // Info about the formation the unit is in
     
     // GameObject with a simple image to represent unit selection
     private GameObject _selectionRing = null;
@@ -26,7 +26,6 @@ public class UnitCharacter : MonoBehaviour
         _selectionRing = transform.GetChild(0).Find(UNIT_SELECTION).gameObject;
         
         _isSelected = false;
-        _inFormation = false;
 
         // The child contains the visuals of the character
         _meshRenderer = gameObject.transform.GetChild(0).GetComponent<MeshRenderer>();
@@ -45,13 +44,20 @@ public class UnitCharacter : MonoBehaviour
         {
             _movementBehavior.Target = _targetPosition;
         }
+
+        if(_isSelected == true && _formation == null)
+        {
+            // If it is selected and not in a formation
+            if(_player.ClickPosition != Vector3.zero) 
+                _movementBehavior.Target = _player.ClickPosition;
+        }
     }
 
 
     private void ChangeColor(bool inFormation)
     {
 
-        if (_inFormation)
+        if (_formation != null)
         {
             // Modify the material's color directly
             _meshRenderer.material.color = _formationColor;
@@ -71,16 +77,18 @@ public class UnitCharacter : MonoBehaviour
             _isSelected = value;
             if (_selectionRing != null)
                 _selectionRing.SetActive(value);
-          
+
+            if(_formation != null)
+                _formation.IsSelected = value;        
         }
     }
 
-    public bool InFormation
+    public Formation Formation
     {
-        get { return _inFormation; }
+        get { return _formation; }
         set
         {
-            _inFormation = value;
+            _formation = value;
             if (_meshRenderer != null)
             {
                 ChangeColor(value);
@@ -88,13 +96,10 @@ public class UnitCharacter : MonoBehaviour
         }
     }
 
-
     public Vector3 Target
     {
         set { _targetPosition = value; }
     }
-
-
     public UnitMovementBehaviour MovementBehavior
     {
         get { return _movementBehavior; }

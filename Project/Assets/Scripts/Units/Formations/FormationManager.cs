@@ -48,25 +48,19 @@ public class FormationManager : MonoBehaviour
             return;
         }
 
-
         // There are at least some units that are already in a formation
 
         // First remove from other formations the units
         RemoveFromFormations(formationIndexes);
 
         // Group all units in a unique formation
-        AddToFormation(formationIndexes[0], units);
+        //AddToFormation(formationIndexes[0], units);
+        // Create a new formation with the new units
+        _formations.Add(Instantiate(_formationPrefab, transform).GetComponent<Formation>());
+        _formations[_formations.Count - 1].Create(_nextFormationID, units);
+        ++_nextFormationID;
 
     }
-
-    private void AddToFormation(int formationID, List<UnitCharacter> unitsToAdd)
-    {
-        Formation foundFormation = _formations.Find(formation =>formation.ID == formationID);
-
-        if (foundFormation != null)
-            foundFormation.Add(unitsToAdd);
-    }
-
 
     private void RemoveFromFormations(List<int> formationIndexes)
     {
@@ -75,8 +69,8 @@ public class FormationManager : MonoBehaviour
         for (int index = 1; index < formationIndexes.Count; ++index)
         {
             int formationID = formationIndexes[index];
-            if(formationID != notToRemoveID)
-            {
+            //if(formationID != notToRemoveID)
+            //{
                 Formation foundFormation = _formations.Find(formation => formation.ID == formationID);
                 if (foundFormation != null)
                 {
@@ -84,7 +78,7 @@ public class FormationManager : MonoBehaviour
                     foundFormation.RemoveAll();
                     _formations.Remove(foundFormation);
                 }
-            }
+            //}
           
         }
     }
@@ -94,7 +88,10 @@ public class FormationManager : MonoBehaviour
     {
         foreach(var formation in _formations)
         {
-            formation.MoveOrder(target);
+            if(formation.IsSelected)
+            {
+                formation.MoveOrder(target);
+            }          
         }
     }
 }

@@ -47,7 +47,7 @@ public class FormationLeader : MonoBehaviour
                 {
                     // Still units to add
                     GameObject unitGO = Instantiate(_unitsSlotsVisual, transform);
-                    
+
                     Vector3 unitPosition = startPos + (rowIdx * _spacing * Vector3.back) + (colIdx * _spacing * Vector3.right);
                     unitGO.transform.position = unitPosition;
                     _unitsTransforms.Add(unitGO.transform);
@@ -60,30 +60,24 @@ public class FormationLeader : MonoBehaviour
 
     public void FixedUpdate()
     {
-
         if(_leaderMovement != null )   // Handle leader's movement
         {          
             _leaderMovement.HandleMovement();
         }
            
-
         // Make the units move to their positions in the formation
         List<UnitCharacter> units = _formation.Units;
         for (int unitIdx = 0; unitIdx < units.Count; ++unitIdx)
         {
             units[unitIdx].Target = _unitsTransforms[unitIdx].position;
         }
-
        
     }
-
-
 
     public Vector3 TargetPosition
     {
         get { return _leaderMovement.TargetPosition; }
         set { _leaderMovement.TargetPosition = value; }
     }
-
 
 }

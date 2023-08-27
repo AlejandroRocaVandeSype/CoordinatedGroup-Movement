@@ -14,6 +14,8 @@ public class Formation : MonoBehaviour
                                                      // Placed in the center of the formation
     private FormationLeader _leaderCP;
 
+    private bool _isSelected;
+
     // *****************************************++++++++
     //              NEW FORMATION
     // Give it an ID and add all units to this formation
@@ -23,6 +25,7 @@ public class Formation : MonoBehaviour
     public void Create(int formationID, List<UnitCharacter> unitsToAdd)
     {
         _formationID = formationID;
+        _isSelected = true;
         _unitsInFormation = new List<UnitCharacter>(unitsToAdd.Count);
         Add(unitsToAdd);
         CreateLeader();
@@ -38,7 +41,7 @@ public class Formation : MonoBehaviour
 
             // Not repeated
             _unitsInFormation.Add(newUnit);
-            newUnit.InFormation = true;
+            newUnit.Formation = gameObject.GetComponent<Formation>();
         }
        
     }
@@ -63,9 +66,10 @@ public class Formation : MonoBehaviour
     {
         foreach(UnitCharacter unit in _unitsInFormation)
         {
-            unit.InFormation = false;
+            unit.Formation = null;
         }
         _unitsInFormation.Clear();
+        _leaderCP = null;
         _leaderUnit = null;
     }
 
@@ -83,7 +87,7 @@ public class Formation : MonoBehaviour
     public void MoveOrder(Vector3 target)
     {
         // Leader receives the order of where to move
-       if(_leaderCP != null)
+       if(_leaderCP != null && _isSelected == true)
         {
            _leaderCP.TargetPosition = target;
         }
@@ -102,12 +106,39 @@ public class Formation : MonoBehaviour
         return center;
     }
 
+    private bool FormationStillSelected()
+    {
+        foreach(UnitCharacter unit in _unitsInFormation)
+        {
+            if(unit.IsSelected)
+                return true;
+        }
+
+        return false;
+    }
+
     public int ID
     {
         get { return _formationID; }
     }
 
-
+    public bool IsSelected
+    {
+        get { return _isSelected; }
+        set 
+        { 
+            if(value == false)
+            {
+                // Check if there are still units selected in this formation
+                _isSelected = FormationStillSelected();
+            }
+            else
+            {
+                // As long as one unit is selected -> Entire formation is selected
+                _isSelected = true;
+            }           
+        }
+    }
     public List<UnitCharacter> Units
     {
         get { return _unitsInFormation; }

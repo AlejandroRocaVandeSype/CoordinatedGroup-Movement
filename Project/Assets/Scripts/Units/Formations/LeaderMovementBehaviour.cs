@@ -1,5 +1,8 @@
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
 // MOVEMENT FOR THE VIRTUAL LEADER IN THE FORMATION
 
@@ -24,6 +27,7 @@ public class LeaderMovementBehaviour : MonoBehaviour
     private Rigidbody _rigidBody;                       // To control the angular speed of the leader
     private Vector3 _currentPos;
 
+    private int _nextCornerInPath = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +38,7 @@ public class LeaderMovementBehaviour : MonoBehaviour
         _stopDistance = 0.5f;
 
         _rigidBody = GetComponent<Rigidbody>();
+
     }
 
    public void HandleMovement()
@@ -69,7 +74,7 @@ public class LeaderMovementBehaviour : MonoBehaviour
             // Path was found
             // The next corner in the path will determine in which direction the it has to go
             // End position - start position = vector towards end position 
-            _target.direction = (_pathToTarget.corners[1] - _currentPos).normalized;
+            _target.direction = (_pathToTarget.corners[_nextCornerInPath] - _currentPos).normalized;
             _speed = MAX_SPEED;
             if (_speed != 0f)
                 _isMoving = true;
@@ -86,10 +91,14 @@ public class LeaderMovementBehaviour : MonoBehaviour
         // Move towards the indicated direction
         // Aline the the forward direction of the leader with the target
         // this way it correctly rotates towards the target
-        _rigidBody.angularVelocity = new Vector3(0f, Vector3.Cross(_target.direction, transform.forward).y, 0f) * -_angularSpeed;
+        //  Cross product gives a new vector that is perpendicular to the target and the forward vector. This
+        // helps us to determine in which direction the leader has to rotate around to face our target.
+        // The angularSpeed just indicates at what speed we want to rotate
+        _rigidBody.angularVelocity = Vector3.Cross(_target.direction, transform.forward) * -_angularSpeed;
 
-        // Update position using speed
+        // We make our leader to move towards the forward direction which will always be in the direction of our target
         transform.position += (_speed * transform.forward * Time.fixedDeltaTime);
+     
     }
     private void StopMovement()
     {
@@ -100,7 +109,8 @@ public class LeaderMovementBehaviour : MonoBehaviour
 
     public Vector3 TargetPosition
     {
-        get { return _target.position; }
+        get { return _target.position; 
+        }
         set { _target.position = value; }
     }
 

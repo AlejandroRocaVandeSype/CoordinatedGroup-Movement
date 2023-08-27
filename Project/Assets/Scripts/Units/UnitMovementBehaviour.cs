@@ -13,7 +13,7 @@ public class UnitMovementBehaviour : MonoBehaviour
     private Vector3 _target = Vector3.zero;          // Where should the character move
 
     private float _moveSpeed = 0f;
-    private const float MAX_SPEED = 50f;
+    private const float MAX_SPEED = 40f;
     private const float MIN_SPEED = 6f;
     private const float SPEED_MODIFIER = 4f;
     private const float MAX_ROTSPEED = 360.0f;
@@ -49,10 +49,23 @@ public class UnitMovementBehaviour : MonoBehaviour
 
     private void AdjustSpeed()
     {
-        float calculatedSpeed = _navMeshAgent.remainingDistance * SPEED_MODIFIER;
-        _moveSpeed = Mathf.Clamp(calculatedSpeed, MIN_SPEED, MAX_SPEED);
+        UnitCharacter unitCP = gameObject.GetComponent<UnitCharacter>();
+        if (unitCP.IsSelected == true && unitCP.Formation == null && _target != Vector3.zero)
+        {
+            // If not in a formation he goes at his min speed
+            _navMeshAgent.speed = MIN_SPEED;
+            if (_navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
+                _target = Vector3.zero;
+        }
+        else
+        {
+            // In formation -> Moves based on the distance 
+            float calculatedSpeed = _navMeshAgent.remainingDistance * SPEED_MODIFIER;
+            _moveSpeed = Mathf.Clamp(calculatedSpeed, MIN_SPEED, MAX_SPEED);
 
-        _navMeshAgent.speed = _moveSpeed;
+            _navMeshAgent.speed = _moveSpeed;
+        }
+       
     }
     public Vector3 Target
     {
@@ -76,6 +89,7 @@ public class UnitMovementBehaviour : MonoBehaviour
         _navMeshAgent.speed = _moveSpeed;
         _navMeshAgent.angularSpeed = MAX_ROTSPEED;
         _navMeshAgent.acceleration = _acceleration;
+        _navMeshAgent.stoppingDistance = 0.3f;
 
     }
 
