@@ -7,6 +7,9 @@ This small research project was entirely made in Unity and my main sources are "
 
 If you want to try this project, there is a folder called "Demo" where the executable from this project is located. Feel free to download and test it out.
 ## Result
+
+<img src="https://github.com/AlejandroRocaVandeSype/CoordinatedGroup-Movement/assets/31854308/72a953cc-3160-490a-9394-065271d97b37" width="1000">
+
 ## Implementation
 There are different techniques that can be used to implement a Coordinated Group Movement. For this project, I will implement the simplest type of formation movement. In order to create our formations, there are some basic concepts that we first need to know.
 ### Basics
@@ -65,7 +68,7 @@ To achieve this, we cannot directly rely on the Navigation System from Unity to 
   ```
     // The next corner in the path will determine in which direction it has to go
     // End position - start position = vector towards end position 
-    _target.direction = (_pathToTarget.corners[1] - _currentPos).normalized;
+    _target.direction = (_pathToTarget.corners[nextCorner] - _currentPos).normalized;
   ```
 2. Rotate and move: Now that we have the direction in which the leader needs to go, we just need to make him rotate towards this direction. To do this we can use the Cross product to obtain a vector that will be perpendicular to two vectors. These two vectors will be the target direction and a vector that represents the forward direction from the object that needs to move. This way, we can determine the rotation axis that the leader needs to rotate around, to face our target, which will be the next position in the path. If we just multiply the resulting vector by a value, this will determine how fast our object will rotate. Finally, we will move our leader forward, since he will be already facing the correct direction because we calculated in the previous step, this will make him move in the correct direction.
 
