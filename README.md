@@ -1,3 +1,4 @@
+<h1>Coordinated Group Movement</h1>
 ## Introduction
 This project implements the basics of Coordinated Group Movement where units are grouped together in formations. This allows us to move a group of characters in a cohesive way, as if they all would be moving together as a group or squad.
 
