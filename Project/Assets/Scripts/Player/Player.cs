@@ -39,88 +39,22 @@ public class Player : MonoBehaviour
 
     private void PlayerInput()
     {
-        //      ******* UNITS MOVEMENT *********
-        // REGISTER WHERE THE PLAYER CLICKED WITH THE MOUSE
-        // *************************************************
+        // Units Movement
         if (Input.GetMouseButtonUp(MOUSE_RIGHT_CLICK))
         {
-            // Single click - Save the position where it was clicked
-            // Use raycast to get the position where it hits on the ground
-
-            // Ray from the Camera to mousePosition
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hitInfo;
-
-            if (Physics.Raycast(ray, out hitInfo, LayerMask.GetMask(GROUND_LAYER)))
-            {
-                // Only if the hit collider is not an Obstacle then we save the clicked position
-                if (hitInfo.collider.gameObject.layer != LayerMask.NameToLayer(OBSTACLE_LAYER))
-                {
-                    _clickPosition = hitInfo.point;
-                    StartCoroutine(ResetClickPos());
-                }
-                else
-                {
-                    _clickPosition = Vector3.zero;
-                }
-
-                // Send the movement order to the selected formation
-                _formationManager.SendMovementOrder(_clickPosition);
-            }
+            MoveUnits();
         }
 
-        //               ****** UNITS SELECTION ******
-        // WITH LEFT SHIT -> Allows Multiple selection (or deselection if unit already selected)
-        // WITHOUT LEFT SHIFT -> Single unit selection
-        // ****************************************************************
+        // Units Selection
         if (Input.GetMouseButtonUp(MOUSE_LEFT_CLICK))
-        {          
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hitInfo;
-
-            // Reset the positions of the visual box for dragging mouse input
-            bool resetDragPos = true;
-            DrawDraggingVisual(resetDragPos);
-
-            if (Physics.Raycast(ray, out hitInfo))
-            {
-                GameObject hitObject = hitInfo.collider.gameObject;
-                UnitCharacter unit = hitObject.GetComponent<UnitCharacter>();
-                if (unit != null)
-                {
-                    // A unit was selected
-                    if (Input.GetKey(KeyCode.LeftShift))
-                    {
-                        // Adding multiple units
-                        _unitSelectionsCP.SelectMultipleUnits(unit);
-                    }
-                    else
-                    {
-                        // Single unit
-                        _unitSelectionsCP.SelectSingleUnit(unit);
-                    }                 
-                }
-                else
-                {
-                    // NO UNIT WAS SELECTED
-                    if(!Input.GetKey(KeyCode.LeftShift))
-                    {
-                        // If LEFT SHIFT wasn't being pressed -> Deselect all of them
-                        _unitSelectionsCP.Deselect();
-                    }
-                   
-                }
-            }
-
-            // When button is up we also check if a unit was selected with the visual dragging box
-            DraggingSelectionUnits();
+        {
+            SelectUnits();
         }
 
         // START OF MOUSE CLICK DRAGGING
         if(Input.GetMouseButtonDown(MOUSE_LEFT_CLICK))
         {
             _dragStartPos= Input.mousePosition;
-
             _selectionRect = new Rect();
         }
         // MOUSE CLICK HOLD -> Draw a visual box
@@ -137,11 +71,83 @@ public class Player : MonoBehaviour
         {
             // Check if enough units are selected
             if(_unitSelectionsCP.UnitsSelected.Count > 1)
-            {
                 _world.FormationManager.CreateFormation(_unitSelectionsCP.UnitsSelected);
+        }
+
+    }
+
+    //      ******* UNITS MOVEMENT *********
+    // REGISTER WHERE THE PLAYER CLICKED WITH THE MOUSE
+    private void MoveUnits()
+    {
+        // Single click - Save the position where it was clicked
+        // Use raycast to get the position where it hits on the ground
+        // Ray from the Camera to mousePosition
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitInfo;
+
+        if (Physics.Raycast(ray, out hitInfo, LayerMask.GetMask(GROUND_LAYER)))
+        {
+            // Only if the hit collider is not an Obstacle then we save the clicked position
+            if (hitInfo.collider.gameObject.layer != LayerMask.NameToLayer(OBSTACLE_LAYER))
+            {
+                _clickPosition = hitInfo.point;
+                StartCoroutine(ResetClickPos());
+            }
+            else
+            {
+                _clickPosition = Vector3.zero;
+            }
+
+            // Send the movement order to the selected formation
+            _formationManager.SendMovementOrder(_clickPosition);
+        }
+    }
+
+    //               ****** UNITS SELECTION ******
+    // WITH LEFT SHIT -> Allows Multiple selection (or deselection if unit already selected)
+    // WITHOUT LEFT SHIFT -> Single unit selection
+    private void SelectUnits()
+    {
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitInfo;
+
+        // Reset the positions of the visual box for dragging mouse input
+        bool resetDragPos = true;
+        DrawDraggingVisual(resetDragPos);
+
+        if (Physics.Raycast(ray, out hitInfo))
+        {
+            GameObject hitObject = hitInfo.collider.gameObject;
+            UnitCharacter unit = hitObject.GetComponent<UnitCharacter>();
+            if (unit != null)
+            {
+                // A unit was selected
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    // Adding multiple units
+                    _unitSelectionsCP.SelectMultipleUnits(unit);
+                }
+                else
+                {
+                    // Single unit
+                    _unitSelectionsCP.SelectSingleUnit(unit);
+                }
+            }
+            else
+            {
+                // NO UNIT WAS SELECTED
+                if (!Input.GetKey(KeyCode.LeftShift))
+                {
+                    // If LEFT SHIFT wasn't being pressed -> Deselect all of them
+                    _unitSelectionsCP.Deselect();
+                }
+
             }
         }
 
+        // When button is up we also check if a unit was selected with the visual dragging box
+        DraggingSelectionUnits();
     }
 
     private void DrawDraggingVisual(bool reset = false)
